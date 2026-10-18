@@ -1,0 +1,1221 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Butiksverktyg</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--tx:#1d2330;--mut:#667085;--bd:#d9dee7;--ac:#1f6feb;--acx:#fff;--ok:#0a7d3b;--er:#b42318;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14171d;--card:#1d222b;--tx:#e8ebf1;--mut:#9aa4b5;--bd:#333b49;--ac:#5b9bff;--acx:#0b1220;--ok:#4cc27f;--er:#ff7b72}}
+:root[data-theme="dark"]{--bg:#14171d;--card:#1d222b;--tx:#e8ebf1;--mut:#9aa4b5;--bd:#333b49;--ac:#5b9bff;--acx:#0b1220;--ok:#4cc27f;--er:#ff7b72}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*:before,*:after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+main{max-width:720px;margin:0 auto;padding:20px 16px 40px}
+h1{font-size:22px;margin:0 0 4px}
+.sub{color:var(--mut);margin:0 0 20px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:16px;margin-bottom:14px}
+.card h2{font-size:15px;margin:0 0 4px}
+.card p{margin:0 0 10px;color:var(--mut);font-size:13px}
+.drop{display:block;border:2px dashed var(--bd);border-radius:10px;padding:16px;text-align:center;cursor:pointer;color:var(--mut)}
+.drop:hover,.drop.on{border-color:var(--ac)}
+.drop input,.fl input{display:block;width:100%;margin-top:8px;padding:10px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font:14px system-ui,sans-serif}
+.drop b{color:var(--tx)}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+label.f{display:block;font-size:13px;color:var(--mut)}
+label.f input{display:block;width:100%;margin-top:4px;padding:9px 10px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font:inherit}
+button{width:100%;padding:12px;border:0;border-radius:10px;background:var(--ac);color:var(--acx);font:inherit;font-weight:600;cursor:pointer}
+button:disabled{opacity:.45;cursor:default}
+.msg{margin-top:10px;font-size:13px}
+.ok{color:var(--ok)}.er{color:var(--er)}
+.tw{overflow-x:auto;margin-top:10px;max-height:260px;overflow-y:auto}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{padding:5px 8px;border-bottom:1px solid var(--bd);text-align:right;white-space:nowrap}
+th:first-child,td:first-child,th:nth-child(2),td:nth-child(2){text-align:left}
+th{color:var(--mut);font-weight:600;position:sticky;top:0;background:var(--card)}
+.sec{width:auto;padding:9px 14px}.x{width:auto;padding:4px 10px;background:transparent;color:var(--er);border:1px solid var(--bd);font-weight:400;font-size:12px}
+.sbox{border:1px solid var(--bd);border-radius:10px;padding:12px;margin-top:12px}.sh{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.gr{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+textarea{display:block;width:100%;margin-top:4px;padding:8px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font:13px/1.4 ui-monospace,Consolas,monospace;resize:vertical}
+.st{font-size:12px;margin-top:3px;min-height:16px}
+.brow{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:8px;align-items:end}
+.brow .x{align-self:end;padding:9px 10px}
+.fl{display:block;font-size:13px;color:var(--mut);grid-column:1/-1}
+.bs{font-size:12px;margin-top:6px}
+.vid{position:relative;background:#000;border-radius:10px;overflow:hidden;margin-top:10px;display:none}
+.vid.on{display:block}.vid video{display:block;width:100%;max-height:50vh;object-fit:cover}
+.vid i{position:absolute;left:12%;right:12%;top:50%;height:2px;background:#e5484d;box-shadow:0 0 8px #e5484d}
+.sc2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.sc2 button.s2,.sbtn.s2{background:transparent;color:var(--tx);border:1px solid var(--bd)}
+.sl .sh input{flex:1;min-width:0;margin:0 6px;padding:6px 8px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font:inherit}
+.sl .sh{display:flex;align-items:center;gap:4px;padding:6px 0;border-bottom:1px solid var(--bd)}
+.sl .sh .e{font-variant-numeric:tabular-nums;font-size:12px;color:var(--mut);white-space:nowrap}
+.sl .sh .x{width:auto;padding:6px 10px}
+.chkr{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:14px;color:var(--tx)}.chkr input{width:20px;height:20px;margin:0}
+.tabs{display:flex;gap:4px;margin:0 0 18px;border-bottom:1px solid var(--bd);overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tabs button{width:auto;flex:1 0 auto;white-space:nowrap;background:transparent;color:var(--mut);border-radius:8px 8px 0 0;padding:10px 8px;border-bottom:3px solid transparent;font-size:13px}
+.tabs button.on{color:var(--tx);border-bottom-color:var(--ac)}
+select{display:block;width:100%;margin-top:4px;padding:9px 10px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font:inherit}
+label.f input[inputmode]{font-variant-numeric:tabular-nums}
+.big{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:14px}
+.big div{background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:12px}
+.big small{display:block;color:var(--mut);font-size:12px}
+.big b{font-size:26px;line-height:1.2;font-variant-numeric:tabular-nums}
+.neg{color:var(--er)}.pos{color:var(--ok)}.dim{color:var(--mut)}
+input[type=file]{display:block;width:100%;padding:10px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font:14px system-ui,sans-serif}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1px solid var(--bd);border-radius:20px;padding:6px 12px;font-size:13px;cursor:pointer;background:var(--bg);display:inline-flex;align-items:center;gap:6px}
+.chip input{margin:0}.chip:has(input:checked){border-color:var(--ac);background:color-mix(in srgb,var(--ac) 12%,var(--bg))}
+.chk{display:flex;gap:8px;align-items:flex-start;font-size:13px;margin-top:12px}.chk input{margin-top:3px}
+.kvin{width:96px;padding:6px 8px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font:inherit;text-align:right}
+.atab{margin-bottom:16px;padding:12px}.atab table{font-size:12px}.atab th,.atab td{padding:5px 4px}.atab td.l{white-space:normal}.atab h2{font-size:15px;margin:0 0 8px}
+.rt td.l,.rt th.l{text-align:left}
+.rt tr.avg td{font-weight:600;border-top:2px solid var(--bd)}
+.mt{margin-top:12px}
+.cmb .chk{margin-top:6px}.cmb .cn{display:none;width:100%;margin-top:6px;padding:8px 10px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font:inherit}.cmb:has(input[type=checkbox]:checked) .cn{display:block}
+.rt th,.rt td{text-align:right}.rt th:first-child,.rt td:first-child{text-align:left}
+.rt tr.k td{font-weight:600}
+.hint{font-size:12px;color:var(--mut);margin-top:8px}
+</style>
+</head>
+<body>
+<main>
+<h1>Butiksverktyg</h1>
+<nav class="tabs" role="tablist">
+<button type="button" data-t="vecka" class="on" role="tab">Veckouppföljning</button>
+<button type="button" data-t="marg" role="tab">Marginalräknare</button>
+<button type="button" data-t="art" role="tab">Artikeluppföljning</button>
+<button type="button" data-t="scan" role="tab">Skanna EAN</button>
+<button type="button" data-t="mem" role="tab">Minne</button>
+</nav>
+
+<section id="tool-vecka">
+<p class="sub">Släpp in rankinglistan från BiB, fyll i vecka och kvitton, lägg in artikelnummer per gavel – få ett färdigt uppföljningsblad med samma formler som i Grovkem-filen.</p>
+
+<div class="card">
+<h2>1. Rankinglista (BiB HEM17)</h2>
+<p>Filen "Rankinglista" (.xlsx) med artikelnummer, försäljning, antal och bruttovinst.</p>
+<label class="drop" id="d1"><span id="t1">Tryck på rutan nedan och välj filen</span><input type="file" id="f1"></label>
+<div class="msg" id="m1"></div>
+<label class="f mt">Eller välj en sparad vecka<select id="memsel"><option value="">— ingen vald —</option></select></label>
+</div>
+
+<div class="card">
+<h2>2. Tidigare uppföljning (valfritt)</h2>
+<p>Släpp in filen du fick förra veckan så läggs den nya veckan till och jämförs mot historiken. Hoppa över om det är första veckan.</p>
+<label class="drop" id="d2"><span id="t2">Tryck på rutan nedan och välj filen</span><input type="file" id="f2"></label>
+<div class="msg" id="m2"></div>
+</div>
+
+<div class="card">
+<h2>3. Uppgifter för veckan</h2>
+<div class="row">
+<label class="f">Vecka<input type="number" id="wk" min="1" max="53" placeholder="t.ex. 41"></label>
+<label class="f">Antal kvitton<input type="number" id="kv" min="1" placeholder="t.ex. 18604"></label>
+</div>
+<div class="hint" id="ph"></div>
+<div class="row" style="margin-top:14px;align-items:end">
+<label class="f">Antal gavlar i sektionen<input type="number" id="ng" min="1" max="12" value="2"></label>
+<button class="sec" id="add">+ Lägg till sektion</button>
+<button class="sec" id="chg" hidden>Ändra Gavlar</button>
+<button class="sec" id="bk">Bulk Import</button>
+</div>
+<div class="row" style="margin-top:14px;align-items:end">
+<label class="f">Avdelning (sparade gavlar)<select id="setsel"><option value="">— välj —</option></select></label>
+<button class="sec" id="setload">Hämta gavlar</button>
+</div>
+<div class="row" style="margin-top:10px;align-items:end">
+<label class="f">Spara gavlarna som<input type="text" id="setname" placeholder="t.ex. Djur"></label>
+<button class="sec" id="setsave">Spara avdelning</button>
+</div>
+<div class="msg" id="setmsg"></div>
+<div id="secs"></div>
+<div class="hint">Klistra in artikelnummer per gavel (ett per rad, eller åtskilda med komma/mellanslag). Artiklarna hittas i rankinglistan och hamnar i den ordning du skriver dem. Tomma gavlar hoppas över.</div>
+</div>
+
+<div class="card" id="bulk" hidden>
+<h2>Bulk Import</h2>
+<p>Lägg till flera veckor på en gång: skriv veckan (t.ex. v27), antal kvitton och bifoga rankinglistan för veckan. Varje vecka har egna gavlar: välj antal gavlar och fyll i artikelnummer i rutorna (nya veckor börjar med föregående veckas gavlar). Veckorna skapas i veckoordning så att de jämförs med varandra.</p>
+<div id="brows"></div>
+<div class="row" style="margin-top:12px"><button class="sec" id="badd">+ Lägg till vecka</button></div>
+<button id="bgo" disabled style="margin-top:12px">Skapa Excel för alla veckor</button>
+<div class="msg" id="bout"></div>
+</div>
+
+<button id="go" disabled>Skapa Excel</button>
+<div class="msg" id="out"></div>
+</section>
+
+<section id="tool-marg" hidden>
+<p class="sub">Räkna ut marginal i procent och kronor per styck, kartong och pall.</p>
+<div class="card">
+<h2>Priser</h2>
+<p>Inköpspris anges exkl moms. Försäljningspris är priset till kund inkl moms. Marginal % = (försäljningspris exkl moms − inköpspris) / försäljningspris exkl moms.</p>
+<div class="row">
+<label class="f">Inköpspris (kr/st)<input id="m_in" inputmode="decimal" autocomplete="off" placeholder="t.ex. 41"></label>
+<label class="f">Försäljningspris (kr/st)<input id="m_ut" inputmode="decimal" autocomplete="off" placeholder="t.ex. 79"></label>
+<label class="f">Moms<select id="m_vat"><option value="25">25 %</option><option value="12">12 %</option><option value="6">6 %</option><option value="0">0 %</option></select></label>
+</div>
+</div>
+<div class="card">
+<h2>Förpackning</h2>
+<div class="row">
+<label class="f">Antal/krt (st per kartong)<input id="m_n" inputmode="numeric" autocomplete="off" placeholder="t.ex. 12"></label>
+<label class="f">Antal/pall<input id="m_p" inputmode="numeric" autocomplete="off" placeholder="t.ex. 60"></label>
+<label class="f">Antal/pall anges i<select id="m_u"><option value="krt">kartonger</option><option value="st">styck</option></select></label>
+<label class="f">Antal pall<input id="m_pl" inputmode="numeric" autocomplete="off" placeholder="t.ex. 2"></label>
+</div>
+</div>
+<div class="card">
+<h2>Resultat</h2>
+<div id="m_res"><p>Fyll i inköpspris och försäljningspris.</p></div>
+</div>
+</section>
+
+<section id="tool-art" hidden>
+<p class="sub">Följ upp valfria artiklar vecka för vecka, med snitt, senaste veckans diff och prestations index, från de sparade rankinglistorna.</p>
+<div class="card">
+<h2>Artiklar</h2>
+<p>Skriv eller klistra in artikelnummer, ett per rad eller åtskilda med komma/mellanslag.</p>
+<textarea id="a_ids" rows="5" placeholder="Artikelnummer eller EAN-koder …"></textarea>
+<div class="row mt"><button class="sec" id="a_scn" type="button">Hämta skannade koder</button></div>
+<p class="mt">EAN-koder kan skrivas direkt bland artikelnumren. De översätts till artikelnummer med hjälp av artikelfrekvensrapporten (BiB GEM02b).</p>
+<input type="file" id="a_ean" accept=".xlsx,.xls">
+<div class="msg" id="a_eanm"></div>
+</div>
+<div class="card">
+<h2>Veckor</h2>
+<p id="a_wnote">Inga sparade veckor än. Spara rankinglistor under Veckouppföljning eller Minne.</p>
+<div id="a_weeks" class="chips"></div>
+<div class="row mt"><button class="sec" id="a_all" type="button">Alla</button><button class="sec" id="a_none" type="button">Ingen</button></div>
+<label class="chk"><input type="checkbox" id="a_zero" checked><span>Räkna veckor där artikeln saknas i rankinglistan som 0 (annars hoppas de över i snittet).</span></label>
+</div>
+<button id="a_go" disabled>Följ upp</button>
+<div class="msg" id="a_msg"></div>
+<div id="a_res" class="mt"></div>
+</section>
+
+<section id="tool-scan" hidden>
+<p class="sub">Skanna EAN-koder med kameran och spara dem med namn.</p>
+<div class="card">
+<h2>Kamera</h2>
+<div class="vid" id="sc_vid"><video id="sc_v" playsinline muted></video><i></i></div>
+<div class="sc2"><button id="sc_start" type="button">Starta kameran</button><button id="sc_stop" type="button" class="s2" disabled>Stoppa</button></div>
+<label class="chkr"><input type="checkbox" id="sc_auto"> Autospara (skanna flera i rad)</label>
+<label class="chkr"><input type="checkbox" id="sc_look" checked> Slå upp namn online (Open Food Facts m.fl.)</label>
+<div class="msg" id="sc_msg"></div>
+<div id="sc_pend" hidden>
+<label class="f mt">Skannad kod<input id="sc_pe" readonly></label>
+<label class="f mt">Namn på varan<input id="sc_pn" placeholder="Skriv namn"></label>
+<div class="sc2"><button id="sc_ps" type="button">Spara</button><button id="sc_pc" type="button" class="s2">Hoppa över</button></div>
+</div>
+<label class="f mt">Eller skriv in EAN manuellt<input id="sc_man" inputmode="numeric" placeholder="t.ex. 7310865001962"></label>
+<button id="sc_madd" type="button" class="s2" style="margin-top:8px">Lägg till</button>
+</div>
+<div class="card">
+<h2>Sparade koder</h2>
+<input id="sc_q" placeholder="Sök kod eller namn" style="width:100%;padding:9px 10px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font:inherit;margin:6px 0">
+<div class="sl" id="sc_list"><p>Inga koder sparade.</p></div>
+<div class="sc2"><button id="sc_csv" type="button" class="s2">Spara som CSV</button><button id="sc_clr" type="button" class="s2">Rensa alla</button></div>
+<div class="msg" id="sc_lm"></div>
+</div>
+</section>
+<section id="tool-mem" hidden>
+<p class="sub">Sparade rankinglistor och avdelningar. Minnet sparas i webbläsaren på den här enheten. Ta en säkerhetskopia för att flytta det till en annan enhet.</p>
+<div class="msg" id="mem_status"></div>
+<div class="card mt">
+<h2>Sparade veckor</h2>
+<div id="mem_weeks"><p>Inga veckor sparade.</p></div>
+<div class="hint">Kvitton behövs för index och prestations index. Samma veckonummer skrivs över.</div>
+</div>
+<div class="card">
+<h2>Lägg till rankinglistor</h2>
+<p>Välj en eller flera rankinglistor. Veckan läses ur filnamnet (t.ex. "v39 …").</p>
+<input type="file" id="mem_files" multiple>
+<div class="msg" id="mem_imp"></div>
+</div>
+<div class="card">
+<h2>Avdelningar</h2>
+<div id="mem_sets"><p>Inga avdelningar sparade. Spara gavlar under Veckouppföljning.</p></div>
+</div>
+<div class="card">
+<h2>Säkerhetskopia</h2>
+<p>Spara allt minne som filen ButiksMinne.json i din nedladdningsmapp, och läs in den igen vid behov.</p>
+<button id="mem_bk" type="button">Spara säkerhetskopia</button>
+<label class="f mt">Läs in säkerhetskopia<input type="file" id="mem_rs"></label>
+<div class="msg" id="mem_bkm"></div>
+</div>
+</section>
+</main>
+
+<script>
+/* Lokalt minne + nedladdning lokalt i webbläsaren */
+(function(){
+  const mem={};let idb=null;
+  const open=()=>new Promise(res=>{
+    try{const r=indexedDB.open('ButiksMinne',1);
+      r.onupgradeneeded=()=>r.result.createObjectStore('kv');
+      r.onsuccess=()=>res(r.result);r.onerror=()=>res(null);r.onblocked=()=>res(null);
+    }catch(e){res(null)}
+  });
+  const tx=(mode,fn)=>new Promise((res,rej)=>{
+    if(!idb){try{res(fn(null))}catch(e){rej(e)}return}
+    const t=idb.transaction('kv',mode),st=t.objectStore('kv');let out;
+    try{out=fn(st)}catch(e){rej(e);return}
+    t.oncomplete=()=>res(out&&out.result!==undefined?out.result:out);t.onerror=()=>rej(t.error);t.onabort=()=>rej(t.error);
+  });
+  const getAll=()=>new Promise((res,rej)=>{
+    if(!idb){res(Object.entries(mem));return}
+    const o={},st=idb.transaction('kv').objectStore('kv'),c=st.openCursor();
+    c.onsuccess=()=>{const x=c.result;if(x){o[x.key]=x.value;x.continue()}else res(Object.entries(o))};c.onerror=()=>rej(c.error);
+  });
+  const getOne=k=>new Promise((res,rej)=>{
+    if(!idb){res(mem[k]);return}
+    const r=idb.transaction('kv').objectStore('kv').get(k);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);
+  });
+  const put=(k,v)=>tx('readwrite',st=>{if(st)st.put(v,k);else mem[k]=v});
+  const del=k=>tx('readwrite',st=>{if(st)st.delete(k);else delete mem[k]});
+  const docRef=path=>({
+    async get(){const v=await getOne(path);return{exists:v!==undefined,id:path.split('/').pop(),data:()=>v}},
+    async set(d){await put(path,JSON.parse(JSON.stringify(d)))},
+    async update(d){const v=(await getOne(path))||{};await put(path,Object.assign({},v,d))},
+    async delete(){await del(path)}
+  });
+  window.LocalDB={
+    async init(){idb=await open();try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}return !!idb},
+    isIdb:()=>!!idb,
+    doc:docRef,
+    collection(name){return{async get(){
+      const all=await getAll(),pre=name+'/';
+      return{docs:all.filter(([k])=>k.startsWith(pre)&&k.indexOf('/',pre.length)<0).map(([k,v])=>({id:k.slice(pre.length),data:()=>v}))};
+    }}}
+  };
+  window.getDl=async()=>{
+    return{async save({filename,data}){
+      const b=data instanceof Blob?data:new Blob([data],{type:'application/json'});
+      const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=filename;
+      document.body.appendChild(a);a.click();
+      setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},4000);
+    }};
+  };
+})();
+</script>
+<script>
+const $=id=>document.getElementById(id);
+let offers=[],totals=null,prevWb=null;
+
+const txt=v=>{if(v==null)return'';if(typeof v==='object'){if(v.richText)return v.richText.map(t=>t.text).join('');if('result'in v)return String(v.result??'');if(v.text)return String(v.text)}return String(v)};
+const num=v=>{if(v&&typeof v==='object'&&'result'in v)v=v.result;v=Number(v);return isFinite(v)?v:0};
+const fmt=n=>Math.round(n).toLocaleString('sv-SE');
+
+async function load(file){const wb=new ExcelJS.Workbook();await wb.xlsx.load(await file.arrayBuffer());return wb}
+
+function parseRank(buf){
+  const wb=XLSX.read(buf,{type:'array'});
+  const rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,defval:''});
+  const hr=rows.findIndex((r,n)=>n<15&&r.some(v=>txt(v).includes('Artikel nr')));
+  if(hr<0)throw new Error('Hittar ingen rubrikrad med "Artikel nr" – är det rätt fil?');
+  const c={};
+  rows[hr].forEach((v,i)=>{const t=txt(v);
+    if(t.includes('Artikel nr')&&c.id==null)c.id=i;
+    if(t.includes('Antal sålda'))c.q=i;
+    if(t.includes('Försäljning kr'))c.s=i;
+    if(t.includes('Bruttovinst')&&/kr\s*$/.test(t)&&c.g==null)c.g=i});
+  if(c.id==null||c.q==null||c.s==null||c.g==null)throw new Error('Saknar någon av kolumnerna Antal sålda, Försäljning kr eller Bruttovinst kr.');
+  const m={};let tot=null,n=0;
+  rows.slice(hr+1).forEach(r=>{
+    if(txt(r[c.id]).trim()==='Totalt'){tot={q:num(r[c.q]),s:num(r[c.s]),g:num(r[c.g])};return}
+    const id=txt(r[c.id]).trim();
+    if(!id)return;
+    n++;
+    const o=m[id]||(m[id]={id,name:txt(r[c.id+1]).trim()||id,q:0,s:0,g:0});
+    o.q+=num(r[c.q]);o.s+=num(r[c.s]);o.g+=num(r[c.g]);
+  });
+  if(!n)throw new Error('Hittade inga artiklar i filen.');
+  return{map:m,n,tot};
+}
+
+function history(wb,week){
+  const out=[];
+  wb.worksheets.forEach(ws=>{
+    const m=/^V(\d+)$/.exec(ws.name);
+    if(!m||txt(ws.getCell('A1').value)!=='RANKING-APP'||+m[1]>=week)return;
+    const S={name:ws.name,w:+m[1],ids:{},G:[],t:0,k:0};
+    ws.eachRow((row,n)=>{
+      const b=txt(row.getCell(2).value).trim(),c=txt(row.getCell(3).value).trim();
+      if(/^g\d+$/.test(c)&&b)S.ids[b]=n;
+      if(/^Gavel \d+$/.test(c))S.G.push({t:0,slots:[]});
+      else if(/^g\d+$/.test(c)&&S.G.length)S.G[S.G.length-1].slots.push(n);
+      else if(c==='total'&&S.G.length)S.G[S.G.length-1].t=n;
+      if(b.toLowerCase()==='totalt')S.t=n;
+      if(b==='KVITTON')S.k=n+1;
+    });
+    if(S.t&&S.k)out.push(S);
+  });
+  return out.sort((a,b)=>a.w-b.w);
+}
+
+function setup(wb){
+  const H=history(wb,999),L=H[H.length-1];
+  if(!L)return null;
+  const ws=wb.getWorksheet(L.name),out=[];out.name=L.name;
+  ws.eachRow(row=>{
+    const c=txt(row.getCell(3).value).trim(),b=txt(row.getCell(2).value).trim();
+    if(/^Gavel \d+$/.test(c))out.push({sec:num(row.getCell(1).value)||1,ids:[],comb:false,name:''});
+    else if(/^g\d+$/.test(c)&&b&&out.length){
+      const cur=out[out.length-1];
+      if(/^KOMBI:/.test(b)){cur.comb=true;cur.name=txt(row.getCell(4).value).trim();cur.ids.push(...b.slice(6).trim().split(/\s+/).filter(Boolean))}
+      else cur.ids.push(b);
+    }
+  });
+  return out;
+}
+
+function build1(wb,week,kv,groups){
+  if(wb.getWorksheet('V'+week))wb.removeWorksheet('V'+week);
+  const H=history(wb,week),P=H[H.length-1],H14=H.slice(-14),H15=H.slice(-15);
+  const ws=wb.addWorksheet('V'+week);
+  let end=5;groups.forEach(g=>end+=Math.max(4,g.length)+6);
+  const T=end+1,kRow=T+6,K='$B$'+kRow;
+  const F=s=>({formula:s}),q=S=>`'${S.name}'`;
+
+  ws.getCell('A1').value='RANKING-APP';ws.getCell('A1').font={size:8,color:{argb:'FFBFBFBF'}};
+  ws.getCell('C3').value='vecka '+week;ws.getCell('C3').font={bold:true};
+  ws.getCell('C4').value='Vecka '+week;ws.getCell('C4').font={bold:true,size:14};
+  ws.getCell('I4').value=week;ws.getCell('J4').value='mot historik';
+  ws.getCell('I4').border={bottom:{style:'medium'}};
+  [['B',16],['C',9],['D',26],['E',10],['F',12],['G',12],['H',10],['I',12],['J',12],['K',12]].forEach(([c,w])=>ws.getColumn(c).width=w);
+  ws.eachRow;
+  const med={top:{style:'medium'},bottom:{style:'medium'}};
+  const cf=ref=>ws.addConditionalFormatting({ref,rules:[
+    {type:'cellIs',operator:'lessThan',formulae:[0],style:{font:{color:{argb:'FFC00000'}}}},
+    {type:'cellIs',operator:'greaterThan',formulae:[0],style:{font:{color:{argb:'FF00833E'}}}}]});
+  const COL=['E','F','G'],IDX=['I','J','K'];
+  const put=(a,v,nf,b)=>{const c=ws.getCell(a);c.value=v;if(nf)c.numFmt=nf;if(b)c.font={bold:true};return c};
+
+  let r=5;const totRows=[];
+  groups.forEach((g,gi)=>{
+    const sl=Math.max(4,g.length),h=r,t=h+sl+1,ids=g.map(o=>o.id);
+    for(let i=g.length;i<sl;i++)put('C'+(h+1+i),`g${gi+1}${i+1}`,null,true);
+    put('A'+h,g.sec||1).font={size:8,color:{argb:'FFBFBFBF'}};
+    ['Gavel '+(gi+1),'Vara','Ant','Förs','BV','B%','idx antal','idx förs','idx BV'].forEach((x,i)=>put(String.fromCharCode(67+i)+h,x,null,true));
+    g.forEach((o,i)=>{
+      const n=h+1+i;
+      put('B'+n,o.id).font={size:8,color:{argb:'FF8C8C8C'}};
+      put('C'+n,`g${gi+1}${i+1}`,null,true);put('D'+n,o.name);
+      put('E'+n,o.q,'#,##0');put('F'+n,o.s,'#,##0');put('G'+n,o.g,'#,##0');
+      put('H'+n,F(`IFERROR(G${n}/F${n},"")`),'0.00%');
+      COL.forEach((X,k)=>{
+        const terms=H14.filter(S=>S.G[gi]&&S.G[gi].slots[i]).map(S=>`${q(S)}!${X}${S.G[gi].slots[i]}/${q(S)}!$B$${S.k}`);
+        if(terms.length)put(IDX[k]+n,F(`IFERROR(((${X}${n}/${K}) / AVERAGE(${terms.join(', ')})) * 100,"")`),'0');
+      });
+    });
+    totRows.push(t);
+    put('C'+t,'total',null,true);
+    COL.forEach(X=>put(X+t,F(`SUM(${X}${h+1}:${X}${t-1})`),'#,##0',1));
+    put('H'+t,F(`IFERROR(G${t}/F${t},"")`),'0.00%',1);
+    for(const c of 'CDEFGH')ws.getCell(c+t).border=med;
+    put('B'+(t+1),'diff föreg V');put('B'+(t+2),'index ');put('B'+(t+3),'index diff %');put('B'+(t+4),'Prestations Index');
+    const ix=t+2,pt=P&&P.G[gi]&&P.G[gi].t,pq=P?q(P):'';
+    COL.forEach(X=>{
+      if(pt){
+        put(X+(t+1),F(`IFERROR((${X}${t}-(${pq}!${X}${pt}))/(${pq}!${X}${pt}),"")`),'0.00%',1);
+        put(X+(t+3),F(`IFERROR((${X}${ix}-${pq}!${X}${pt+2})/${pq}!${X}${pt+2},"")`),'0.00%');
+      }
+      put(X+ix,F(`${X}${t}/${K}`),'0.000');
+      const terms=H15.filter(S=>S.G[gi]&&S.G[gi].t).map(S=>`${q(S)}!${X}${S.G[gi].t+2}`);
+      if(terms.length)put(X+(t+4),F(`(${X}${ix} / AVERAGE(${terms.join(',')})) * 100`),'0');
+    });
+    if(pt)put('H'+(t+1),F(`IFERROR(H${t}-(${pq}!H${pt}),"")`),'0.00%',1);
+    put('H'+(t+4),F(`IFERROR((G${t+4}*0.6)+(F${t+4}*0.4),"")`),'0',1);
+    cf(`E${t+1}:G${t+1}`);
+    r=t+5;
+  });
+
+  put('B'+T,'totalt',null,true);
+  COL.forEach(X=>put(X+T,F(totRows.map(t=>X+t).join('+')),'#,##0',1));
+  put('H'+T,F(`IFERROR(G${T}/F${T},"")`),'0.00%',1);
+  put('B'+(T+1),'diff %');put('B'+(T+2),'index ');put('B'+(T+3),'index diff %');put('B'+(T+4),'Prestations Index');
+  COL.forEach(X=>{
+    if(P){
+      put(X+(T+1),F(`IFERROR((${X}${T}-${q(P)}!${X}${P.t})/${q(P)}!${X}${P.t},"")`),'0.00%',1);
+      put(X+(T+3),F(`IFERROR((${X}${T+2}-${q(P)}!${X}${P.t+2})/${q(P)}!${X}${P.t+2},"")`),'0.00%');
+    }
+    put(X+(T+2),F(`${X}${T}/${K}`),'0.000');
+    if(H15.length)put(X+(T+4),F(`IFERROR((${X}${T+2} / AVERAGE(${H15.map(S=>`${q(S)}!${X}${S.t+2}`).join(',')})) * 100,"")`),'0');
+  });
+  if(P)put('H'+(T+1),F(`IFERROR(H${T}-${q(P)}!H${P.t},"")`),'0.00%',1);
+  put('H'+(T+4),F(`IFERROR((G${T+4}*0.6)+(F${T+4}*0.4),"")`),'0',1);
+  cf(`E${T+1}:G${T+1}`);
+
+  put('B'+(T+5),'KVITTON');put('C'+(T+5),'Diff ');put('D'+(T+5),'Diff %');
+  put('B'+kRow,kv);
+  if(P){put('C'+kRow,F(`B${kRow}-${q(P)}!$B$${P.k}`));put('D'+kRow,F(`C${kRow}/${q(P)}!$B$${P.k}`),'0.00%')}
+  for(const c of 'BCD')ws.getCell(c+kRow).border=med;
+  ws.eachRow(row=>row.eachCell(c=>{c.font={name:'Calibri',size:11,...(c.font||{})}}));
+  return{sheet:ws.name,hist:H.length,groups:groups.length};
+}
+
+const weekFrom=n=>{const m=/(?:^|[^a-zåäö0-9])v(?:ecka)?[\s_-]*(\d{1,2})(?!\d)/i.exec(n||'');return m?+m[1]:0};
+
+function extractLater(wb,week){
+  const out=[];
+  wb.worksheets.slice().forEach(ws=>{
+    const m=/^V(\d+)$/.exec(ws.name);
+    if(!m||+m[1]<=week||txt(ws.getCell('A1').value)!=='RANKING-APP')return;
+    const G=[];let cur=null,kRow=0;
+    ws.eachRow((row,n)=>{
+      const b=txt(row.getCell(2).value).trim(),c=txt(row.getCell(3).value).trim();
+      if(b==='KVITTON'){kRow=n+1;return}
+      if(/^Gavel \d+$/.test(c)){cur=[];cur.sec=num(row.getCell(1).value)||1;G.push(cur);return}
+      if(c==='total'){cur=null;return}
+      if(cur&&/^g\d+$/.test(c)){
+        const nm=txt(row.getCell(4).value).trim(),q=num(row.getCell(5).value),s=num(row.getCell(6).value),g=num(row.getCell(7).value);
+        cur.push({id:b,name:nm,q,s,g,has:!!(b||nm||q||s||g)});
+      }
+    });
+    const groups=G.map(g=>{while(g.length&&!g[g.length-1].has)g.pop();const o=g.map(({has,...r})=>r);o.sec=g.sec;return o}).filter(g=>g.length);
+    out.push({w:+m[1],kv:kRow?num(ws.getCell('B'+kRow).value):0,groups});
+  });
+  return out.sort((a,b)=>a.w-b.w);
+}
+
+function build(wb,week,kv,groups){
+  const later=extractLater(wb,week);
+  later.forEach(L=>wb.removeWorksheet('V'+L.w));
+  const res=build1(wb,week,kv,groups);
+  later.forEach(L=>build1(wb,L.w,L.kv,L.groups));
+  res.rebuilt=later.map(L=>L.w);
+  return res;
+}
+
+let map={},secs=[],mapSrc='file',savedAs=0,mapName='';
+const esc=t=>t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const ids=t=>[...new Set(t.split(/[\s,;]+/).map(x=>x.trim()).filter(Boolean))];
+const G=v=>typeof v==='string'?{t:v,k:false,n:''}:{t:(v&&v.t)||'',k:!!(v&&v.k),n:(v&&v.n)||''};
+const r2=x=>Math.round(x*100)/100;
+const gvItems=(g,m)=>{
+  const l=ids(g.t).map(i=>m[i]||{id:i,name:'(finns ej i filen)',q:0,s:0,g:0});
+  if(!g.k||!l.length)return l;
+  const f=l.find(o=>m[o.id]);
+  const one={id:'KOMBI: '+l.map(o=>o.id).join(' '),name:(g.n||'').trim()||(f?f.name:l[0].name),q:0,s:0,g:0};
+  l.forEach(o=>{one.q+=o.q;one.s+=o.s;one.g+=o.g});
+  one.q=r2(one.q);one.s=r2(one.s);one.g=r2(one.g);
+  return [one];
+};
+const groups=(m=map)=>secs.flatMap((sc,si)=>sc.map(v=>{const g=gvItems(G(v),m);g.sec=si+1;return g})).filter(g=>g.length);
+function check(){
+  $('go').disabled=!(Object.keys(map).length&&+$('wk').value>0&&+$('kv').value>0&&groups().length);
+}
+function status(si,gi){
+  const gv=G(secs[si][gi]),el=$(`st${si}_${gi}`),l=ids(gv.t),miss=Object.keys(map).length?l.filter(i=>!map[i]):[];
+  el.className='st '+(miss.length?'er':'ok');
+  let t=l.length?`${l.length-miss.length} av ${l.length} funna`+(miss.length?` – saknas: ${miss.join(', ')}`:''):'';
+  if(gv.k&&l.length&&Object.keys(map).length){const o=gvItems(gv,map)[0];t+=` · kombineras: ${fmt(o.q)} st, ${fmt(o.s)} kr, BV ${fmt(o.g)}`}
+  el.textContent=t;
+}
+function render(){
+  let n=0;
+  $('secs').innerHTML=secs.map((s,si)=>`<div class="sbox"><div class="sh"><b>Sektion ${si+1}</b><button class="x" data-rm="${si}">Ta bort</button></div><div class="gr">${s.map((v,gi)=>{n++;const o=G(v);return `<div><label class="f">Gavel ${n}<textarea rows="5" data-s="${si}" data-g="${gi}" placeholder="Artikelnummer …">${esc(o.t)}</textarea><div class="st" id="st${si}_${gi}"></div></label><div class="cmb"><label class="chk"><input type="checkbox" data-s="${si}" data-g="${gi}" data-k="k" ${o.k?'checked':''}><span>Kombinera till en vara</span></label><input type="text" class="cn" data-s="${si}" data-g="${gi}" data-k="n" placeholder="Namn på varan (valfritt)" value="${esc(o.n)}"></div></div>`}).join('')}</div></div>`).join('');
+  secs.forEach((s,si)=>s.forEach((_,gi)=>status(si,gi)));
+  check();bcheck();
+}
+$('chg').onclick=()=>{
+  const S=prevWb&&setup(prevWb),m=$('m2');
+  if(!S||!S.length){m.className='msg er';m.textContent='Hittade inga gavlar i förra veckans blad.';return}
+  const known=i=>map[i]||bulk.some(r=>r.map&&r.map[i]);
+  if(!Object.keys(map).length&&!bulk.some(r=>r.map)){m.className='msg er';m.textContent='Släpp in rankinglistan (steg 1) eller bifoga filer i Bulk Import först, så att saknade artiklar kan hoppas över.';return}
+  let skip=0;const by=new Map();
+  S.forEach(g=>{if(!by.has(g.sec))by.set(g.sec,[]);const keep=g.ids.filter(known);skip+=g.ids.length-keep.length;by.get(g.sec).push({t:keep.join('\n'),k:!!g.comb,n:g.name||''})});
+  secs=[...by.values()];render();
+  m.className='msg ok';m.textContent=`Gavlar hämtade från ${S.name}: ${S.length} gavlar i ${secs.length} sektion(er).`+(skip?` ${skip} artikel(nummer) saknas i rankinglistan och hoppades över.`:'');
+};
+const bweek=t=>{const m=/\d+/.exec(t);return m?+m[0]:0};
+const newRow=()=>{
+  const prev=bulk[bulk.length-1];
+  let gv=(prev?prev.gv:secs.flat()).map(x=>({...G(x)}));
+  if(!gv.length)gv=[G(''),G('')];
+  return{w:'',kv:'',gv,map:null,msg:'',src:'',name:''};
+};
+let bulk=[];bulk.push(newRow());
+const bgroups=r=>r.gv.map(v=>{const g=gvItems(G(v),r.map);g.sec=1;return g}).filter(g=>g.length);
+function bstatus(i,gi){
+  const r=bulk[i],gv=G(r.gv[gi]),el=$(`bst${i}_${gi}`),l=ids(gv.t),miss=r.map?l.filter(x=>!r.map[x]):[];
+  el.className='st '+(miss.length?'er':'ok');
+  let t=l.length?(r.map?`${l.length-miss.length} av ${l.length} funna`+(miss.length?` – saknas: ${miss.join(', ')}`:''):`${l.length} artikelnummer`):'';
+  if(gv.k&&l.length&&r.map){const o=gvItems(gv,r.map)[0];t+=` · kombineras: ${fmt(o.q)} st, ${fmt(o.s)} kr, BV ${fmt(o.g)}`}
+  el.textContent=t;
+}
+const memOptions=()=>'<option value="">— välj —</option>'+(window.Mem?Mem.weeks().map(w=>`<option value="${w}">V${w}</option>`).join(''):'');
+function brender(){
+  $('brows').innerHTML=bulk.map((r,i)=>`<div class="sbox"><div class="brow"><label class="f">Vecka<input type="text" data-i="${i}" data-k="w" placeholder="v27" value="${esc(r.w)}"></label><label class="f">Kvitton<input type="number" data-i="${i}" data-k="kv" placeholder="18604" value="${esc(String(r.kv))}"></label><label class="f">Antal gavlar<input type="number" min="1" max="12" data-i="${i}" data-k="ng" value="${r.gv.length}"></label><label class="f">Sparad vecka<select data-i="${i}" data-k="mem">${memOptions()}</select></label><label class="fl">Eller bifoga fil (.xlsx)<input type="file" data-i="${i}" data-k="f"></label><button class="x" data-bx="${i}">Ta bort</button></div><div class="bs ${r.map?'ok':''}">${esc(r.msg)}</div><div class="gr" style="margin-top:8px">${r.gv.map((v,gi)=>{const o=G(v);return `<div><label class="f">Gavel ${gi+1}<textarea rows="4" data-i="${i}" data-g="${gi}" placeholder="Artikelnummer …">${esc(o.t)}</textarea><div class="st" id="bst${i}_${gi}"></div></label><div class="cmb"><label class="chk"><input type="checkbox" data-i="${i}" data-g="${gi}" data-k="k" ${o.k?'checked':''}><span>Kombinera till en vara</span></label><input type="text" class="cn" data-i="${i}" data-g="${gi}" data-k="n" placeholder="Namn på varan (valfritt)" value="${esc(o.n)}"></div></div>`}).join('')}</div></div>`).join('');
+  bulk.forEach((r,i)=>r.gv.forEach((_,gi)=>bstatus(i,gi)));
+  bcheck();
+}
+function bcheck(){
+  const ws=bulk.map(r=>bweek(r.w));
+  $('bgo').disabled=!(bulk.length&&bulk.every((r,i)=>ws[i]>0&&+r.kv>0&&r.map&&r.gv.some(v=>ids(G(v).t).length))&&new Set(ws).size===ws.length);
+}
+$('bk').onclick=()=>{$('bulk').hidden=!$('bulk').hidden;if(!$('bulk').hidden){if(bulk.length===1&&!bulk[0].map&&!bulk[0].w&&bulk[0].gv.every(g=>!G(g).t)){bulk.length=0;bulk.push(newRow())}brender()}};
+$('badd').onclick=()=>{bulk.push(newRow());brender()};
+$('brows').onclick=e=>{const x=e.target.dataset.bx;if(x!=null){bulk.splice(+x,1);if(!bulk.length)bulk.push(newRow());brender()}};
+$('brows').oninput=e=>{
+  const t=e.target,i=t.dataset.i;if(i==null)return;
+  if(t.dataset.g!=null){const r=bulk[+i],gi=+t.dataset.g,o=r.gv[gi]=G(r.gv[gi]),k=t.dataset.k;if(k==='k')o.k=t.checked;else if(k==='n')o.n=t.value;else o.t=t.value;bstatus(+i,gi);bcheck();return}
+  if(t.dataset.k==='w'||t.dataset.k==='kv'){bulk[+i][t.dataset.k]=t.value;bcheck()}
+};
+$('brows').onchange=async e=>{
+  const t=e.target,i=+t.dataset.i,r=bulk[i];
+  if(t.dataset.g!=null){const gi=+t.dataset.g,o=r.gv[gi]=G(r.gv[gi]),k=t.dataset.k;if(k==='k')o.k=t.checked;else if(k==='n')o.n=t.value;else o.t=t.value;bstatus(i,gi);bcheck();return}
+  if(t.dataset.k==='ng'){
+    const n=Math.max(1,Math.min(12,Math.round(+t.value)||1));
+    while(r.gv.length<n)r.gv.push(G(''));r.gv.length=n;brender();return;
+  }
+  if(t.dataset.k==='mem'){
+    const v=+t.value;if(!v)return;
+    try{r.map=await Mem.loadWeek(v);r.src='mem';r.name='';r.w='v'+v;const w=Mem.idx['v'+v];if(w&&w.kv)r.kv=w.kv;r.msg=`Sparad vecka ${v}: ${Object.keys(r.map).length} artiklar.`}catch(err){r.map=null;r.msg='Kunde inte hämta veckan: '+Mem.err(err)}
+    brender();return;
+  }
+  if(t.dataset.k!=='f'||!t.files[0])return;
+  try{
+    const x=parseRank(await t.files[0].arrayBuffer());
+    r.map=x.map;r.src='file';r.name=t.files[0].name;r.msg=`${t.files[0].name}: ${Object.keys(x.map).length} artiklar inlästa.`;
+    const wk=weekFrom(t.files[0].name);if(!r.w&&wk)r.w='v'+wk;
+  }catch(err){r.map=null;r.msg=err.message}
+  brender();
+};
+$('bgo').onclick=async()=>{
+  const out=$('bout');out.className='msg';out.textContent='Skapar fil …';
+  try{
+    const wb=prevWb||new ExcelJS.Workbook(),rows=bulk.map(r=>({w:bweek(r.w),kv:+r.kv,gs:bgroups(r),src:r.src,map:r.map,name:r.name})).sort((a,b)=>a.w-b.w);
+    for(const r of rows){
+      if(window.Mem&&Mem.ok){try{if(r.src==='file')await Mem.saveWeek(r.w,r.map,r.kv,r.name);else await Mem.setKv(r.w,r.kv)}catch(e){out.textContent='Kunde inte spara vecka '+r.w+' i minnet ('+Mem.err(e)+'). Fortsätter …'}}if(!r.gs.length)throw new Error('Vecka '+r.w+' saknar artikelnummer.');build(wb,r.w,r.kv,r.gs)}
+    const buf=await wb.xlsx.writeBuffer();
+    const dl=await getDl();
+    if(!dl){out.className='msg er';out.textContent='Nedladdning är inte tillgänglig i den här vyn.';return}
+    await dl.save({filename:'Uppföljning Ranking.xlsx',data:new Blob([buf])});
+    out.className='msg ok';out.textContent=`Klart: ${rows.length} veckoblad (${rows.map(r=>'V'+r.w).join(', ')}).`;
+  }catch(e){out.className='msg er';out.textContent=e.code==='declined'?'Sparandet avbröts.':'Något gick fel: '+(e.message||e.code)}
+};
+$('add').onclick=()=>{const k=Math.max(1,Math.min(12,Math.round(+$('ng').value)||1));secs.push(Array.from({length:k},()=>G('')));render()};
+const secH=e=>{
+  const t=e.target;if(t.dataset.s==null)return;
+  const s=+t.dataset.s,g=+t.dataset.g,o=secs[s][g]=G(secs[s][g]),k=t.dataset.k;
+  if(k==='k')o.k=t.checked;else if(k==='n')o.n=t.value;else o.t=t.value;
+  status(s,g);check();bcheck();
+};
+$('secs').oninput=secH;$('secs').onchange=secH;
+$('secs').onclick=e=>{const r=e.target.dataset.rm;if(r!=null){secs.splice(+r,1);render()}};
+function wire(n,onfile){
+  const d=$('d'+n),f=$('f'+n);
+  const go=async file=>{if(file)try{await onfile(file)}catch(e){$('m'+n).className='msg er';$('m'+n).textContent=e.message}};
+  f.onchange=()=>go(f.files[0]);
+  d.ondragover=e=>{e.preventDefault();d.classList.add('on')};
+  d.ondragleave=()=>d.classList.remove('on');
+  d.ondrop=e=>{e.preventDefault();d.classList.remove('on');go(e.dataTransfer.files[0])};
+}
+wire(1,async file=>{
+  const r=parseRank(await file.arrayBuffer());map=r.map;
+  $('t1').innerHTML='<b>'+file.name+'</b>';
+  const all=Object.values(map),sq=all.reduce((a,o)=>a+o.q,0),ss=all.reduce((a,o)=>a+o.s,0),sg=all.reduce((a,o)=>a+o.g,0);
+  const t=r.tot,okT=t&&Math.abs(ss-t.s)<1&&Math.abs(sg-t.g)<1&&Math.abs(sq-t.q)<1;
+  $('m1').className='msg '+(okT||!t?'ok':'er');
+  $('m1').textContent=`${all.length} artiklar inlästa. `+(t?(okT?'Summorna stämmer med Totalt-raden i filen.':'OBS: summorna stämmer inte med Totalt-raden i filen.'):'');
+  mapSrc='file';mapName=file.name;savedAs=0;$('memsel').value='';
+  const wk=weekFrom(file.name);
+  if(wk){$('wk').value=wk;$('m1').textContent+=` Vecka ${wk} hittades i filnamnet.`;
+    if(window.Mem&&Mem.ok){try{await Mem.saveWeek(wk,map,undefined,file.name);savedAs=wk;$('m1').textContent+=' Sparad i minnet.'}catch(e){$('m1').className='msg er';$('m1').textContent+=' Kunde inte spara i minnet: '+Mem.err(e)}}}
+  else $('m1').textContent+=' Ingen vecka hittades i filnamnet – fyll i veckan nedan.';
+  render();placement();
+});
+wire(2,async file=>{
+  prevWb=await load(file);
+  $('t2').innerHTML='<b>'+file.name+'</b>';
+  const n=history(prevWb,999).length;
+  $('chg').hidden=!n;
+  $('m2').className='msg '+(n?'ok':'er');
+  $('m2').textContent=n?`${n} tidigare veckor hittades (${history(prevWb,999).map(s=>s.name).join(', ')}).`:'Inga veckoblad från den här appen hittades i filen – den nya veckan skapas utan historik.';
+  placement();
+});
+function placement(){
+  const el=$('ph'),w=Math.round(+$('wk').value);
+  if(!prevWb||!w){el.textContent='';return}
+  const ws=prevWb.worksheets.filter(x=>/^V\d+$/.test(x.name)&&txt(x.getCell('A1').value)==='RANKING-APP').map(x=>+x.name.slice(1));
+  const before=ws.filter(x=>x<w),later=ws.filter(x=>x>w).sort((a,b)=>a-b);
+  el.className='hint ok';
+  el.textContent=`V${w} läggs in i veckoordning`+(before.length?` efter V${Math.max(...before)}`:' först')+(ws.includes(w)?` och ersätter befintliga V${w}`:'')+(later.length?`. Jämförelsetalen i ${later.map(x=>'V'+x).join(', ')} räknas om.`:'.');
+}
+$('wk').oninput=()=>{check();placement()};
+$('kv').oninput=check;
+$('memsel').onchange=async()=>{
+  const v=+$('memsel').value,m=$('m1');if(!v)return;
+  try{
+    map=await Mem.loadWeek(v);mapSrc='mem';mapName='';savedAs=v;$('wk').value=v;
+    const w=Mem.idx['v'+v];if(w&&w.kv)$('kv').value=w.kv;
+    $('t1').innerHTML='<b>Sparad vecka '+v+'</b>';
+    m.className='msg ok';m.textContent=`Vecka ${v} hämtad från minnet: ${Object.keys(map).length} artiklar.`;
+    render();placement();check();
+  }catch(e){m.className='msg er';m.textContent='Kunde inte hämta veckan: '+Mem.err(e)}
+};
+
+$('go').onclick=async()=>{
+  const out=$('out');out.className='msg';out.textContent='Skapar fil …';
+  try{
+    const week=Math.round(+$('wk').value),wb=prevWb||new ExcelJS.Workbook();
+    if(window.Mem&&Mem.ok){try{if(mapSrc==='file'&&savedAs!==week){await Mem.saveWeek(week,map,+$('kv').value,mapName);savedAs=week}else await Mem.setKv(week,+$('kv').value)}catch(e){out.textContent='Kunde inte spara i minnet ('+Mem.err(e)+'). Skapar filen ändå …'}}
+    const res=build(wb,week,+$('kv').value,groups());
+    const buf=await wb.xlsx.writeBuffer();
+    const dl=await getDl();
+    if(!dl){out.className='msg er';out.textContent='Nedladdning är inte tillgänglig i den här vyn.';return}
+    await dl.save({filename:'Uppföljning Ranking.xlsx',data:new Blob([buf])});
+    out.className='msg ok';
+    out.textContent=`Klart: blad ${res.sheet} med ${res.groups} gavlar, jämfört mot ${res.hist} tidigare veckor.`+(res.rebuilt.length?` Jämförelsetalen i ${res.rebuilt.map(x=>'V'+x).join(', ')} är uppdaterade.`:'');
+  }catch(e){out.className='msg er';out.textContent=e.code==='declined'?'Sparandet avbröts.':'Något gick fel: '+(e.message||e.code)}
+};
+</script>
+<script>
+(function(){
+  const g=id=>document.getElementById(id);
+  const P=v=>{const n=parseFloat(String(v==null?'':v).replace(/\s/g,'').replace(',','.'));return isFinite(n)?n:null};
+  const nf=(n,d)=>n.toLocaleString('sv-SE',{minimumFractionDigits:d,maximumFractionDigits:d});
+  const kr=n=>nf(n,2)+' kr';
+  window.calcMargin=function(i){
+    const v=i.vat/100,ex=i.ut/(1+v),mkr=ex-i.inp;
+    const r={ex,mkr,mp:ex>0?mkr/ex:null,cols:[]};
+    const col=(label,u,extra)=>r.cols.push({label,u,extra,inp:i.inp*u,ex:ex*u,vat:(i.ut-ex)*u,inkl:i.ut*u,mkr:mkr*u});
+    col('Per styck',1);
+    if(i.n>0)col('Per kartong',i.n);
+    let pcs=0;
+    if(i.p>0){pcs=i.u==='krt'?i.p*(i.n>0?i.n:0):i.p;
+      if(pcs>0)col('Per pall',pcs,i.u==='st'&&i.n>0?nf(pcs/i.n,2)+' krt':(i.u==='krt'?i.p+' krt':''));}
+    if(pcs>0&&i.pallar>0)col('Totalt ('+nf(i.pallar,0)+' pall)',pcs*i.pallar);
+    r.warn=(i.u==='krt'&&i.p>0&&!(i.n>0))?'Fyll i antal/krt för att räkna pall i kartonger.':(i.u==='st'&&i.p>0&&i.n>0&&(i.p%i.n!==0)?'Antal/pall delas inte jämnt med antal/krt.':'');
+    return r;
+  };
+  function render(){
+    const inp=P(g('m_in').value),ut=P(g('m_ut').value);
+    const out=g('m_res');
+    if(inp==null||ut==null||ut<=0){out.innerHTML='<p>Fyll i inköpspris och försäljningspris.</p>';return}
+    const r=window.calcMargin({inp,ut,vat:+g('m_vat').value,n:P(g('m_n').value)||0,p:P(g('m_p').value)||0,u:g('m_u').value,pallar:P(g('m_pl').value)||0});
+    const cl=r.mkr<0?' neg':'';
+    const rows=[['Antal (st)',c=>nf(c.u,c.u%1?2:0)],['Inköp',c=>kr(c.inp)],['Försäljning exkl moms',c=>kr(c.ex)],['Moms',c=>kr(c.vat)],['Försäljning inkl moms',c=>kr(c.inkl)],['Marginal kr',c=>kr(c.mkr),1]];
+    out.innerHTML=`<div class="big"><div><small>Marginal</small><b class="${cl}">${r.mp==null?'–':nf(r.mp*100,2)+' %'}</b></div><div><small>Marginal kr/st</small><b class="${cl}">${kr(r.mkr)}</b></div></div>
+<div class="tw" style="max-height:none"><table class="rt"><tr><th></th>${r.cols.map(c=>`<th>${c.label}</th>`).join('')}</tr>${rows.map(([n,f,k])=>`<tr${k?' class="k"':''}><td>${n}</td>${r.cols.map(c=>`<td class="${k&&c.mkr<0?'neg':''}">${f(c)}</td>`).join('')}</tr>`).join('')}</table></div>`+(r.warn?`<div class="msg er">${r.warn}</div>`:'');
+  }
+  ['m_in','m_ut','m_vat','m_n','m_p','m_u','m_pl'].forEach(id=>{g(id).addEventListener('input',render);g(id).addEventListener('change',render)});
+  // flikar
+  const show=t=>{
+    document.querySelectorAll('.tabs button').forEach(b=>{const on=b.dataset.t===t;b.classList.toggle('on',on);b.setAttribute('aria-selected',on)});
+    ['vecka','marg','art','scan','mem'].forEach(x=>{g('tool-'+x).hidden=t!==x});
+    try{localStorage.setItem('tool',t)}catch(e){}
+  };
+  document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',()=>show(b.dataset.t)));
+  let t0='vecka';try{t0=localStorage.getItem('tool')||'vecka'}catch(e){}
+  show(['vecka','marg','art','scan','mem'].includes(t0)?t0:'vecka');
+  render();
+})();
+</script>
+<script>
+(function(){
+  const $=id=>document.getElementById(id);
+  const CH=500;
+  const esc=t=>String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const slug=n=>String(n).normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,60)||('d'+Date.now());
+  const nf=(n,d)=>n.toLocaleString('sv-SE',{minimumFractionDigits:d,maximumFractionDigits:d});
+  const parseIds=t=>[...new Set(String(t).split(/[\s,;]+/).map(x=>x.trim()).filter(Boolean))];
+
+  // ================= MINNE =================
+  const M={ok:false,db:null,idx:{},sets:{},cache:{}};
+  window.Mem=M;
+  M.err=e=>e&&e.code==='quota_exceeded'?'minnet är fullt ('+e.message+')':((e&&(e.message||e.code))||String(e));
+  M.weeks=()=>Object.values(M.idx).map(w=>w.week).sort((a,b)=>a-b);
+  const emit=()=>document.dispatchEvent(new CustomEvent('mem'));
+  M.refresh=async()=>{
+    const [w,s]=await Promise.all([M.db.collection('weeks').get(),M.db.collection('setups').get()]);
+    M.idx={};w.docs.forEach(d=>{const x=d.data();if(x&&x.week)M.idx[d.id]=x});
+    M.sets={};s.docs.forEach(d=>{const x=d.data();if(x&&x.name)M.sets[d.id]=x});
+    emit();
+  };
+  M.init=async()=>{
+    let db=null;
+    M.local=false;
+    if(!db){try{if(await LocalDB.init()){db=LocalDB;M.local=true}}catch(e){}}
+    M.db=db;M.ok=!!db;
+    try{if(db){await M.refresh();await M.loadEan()}else emit()}catch(e){M.ok=false;M.initErr=M.err(e);emit()}
+  };
+  /* EAN <-> artikelnummer */
+  M.ean={map:{},n:0};
+  const nz=c=>String(c).replace(/^0+/,'');
+  const ECH=1200;
+  M.loadEan=async()=>{
+    const r=await M.db.collection('eanmap').get(),map={};let n=0;
+    r.docs.forEach(d=>{try{JSON.parse(d.data().d||'[]').forEach(([e,a,nm])=>{map[nz(e)]={ean:e,art:a,name:nm};n++})}catch(x){}});
+    M.ean={map,n};emit();
+  };
+  M.eanRows=()=>Object.values(M.ean.map).map(o=>[o.ean,o.art,o.name]);
+  M.saveEan=async rows=>{
+    const old=await M.db.collection('eanmap').get();
+    const n=Math.max(1,Math.ceil(rows.length/ECH));
+    for(let i=0;i<n;i++)await M.db.doc('eanmap/c'+i).set({i,d:JSON.stringify(rows.slice(i*ECH,(i+1)*ECH))});
+    for(const d of old.docs){const i=+String(d.id).slice(1);if(i>=n)await M.db.doc('eanmap/'+d.id).delete()}
+    await M.loadEan();
+  };
+  M.parseEan=buf=>{
+    const wb=XLSX.read(buf,{type:'array'});
+    const rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,defval:'',raw:false});
+    const out=[],seen=new Set();let cur=null;
+    rows.slice(1).forEach(r=>{
+      const nm=txt(r[0]).trim(),art=txt(r[1]).trim(),ean=txt(r[2]).trim();
+      if(art)cur=/^\d{9}$/.test(art)?{art,name:nm}:null;
+      if(ean&&cur&&/^\d{8,14}$/.test(ean)&&!seen.has(nz(ean))){seen.add(nz(ean));out.push([ean,cur.art,cur.name])}
+    });
+    if(!out.length)throw new Error('Hittade inga EAN-koder med artikelnummer – är det artikelfrekvensrapporten (GEM02b)?');
+    return out;
+  };
+  M.eanLookup=c=>M.ean.map[nz(c)]||null;
+  M.resolve=list=>{
+    const ids=[],info=[],miss=[];
+    list.forEach(t=>{
+      if(/^\d{8,14}$/.test(t)&&t.length!==9){
+        const o=M.eanLookup(t);
+        if(o){ids.push(o.art);info.push({ean:t,art:o.art,name:o.name})}else miss.push(t);
+      }else ids.push(t);
+    });
+    return{ids:[...new Set(ids)],info,miss};
+  };
+  M.saveWeek=async(week,map,kv,name)=>{
+    const key='v'+week,old=M.idx[key];
+    const items=Object.values(map).map(o=>[o.id,o.name,o.q,o.s,o.g]);
+    const n=Math.max(1,Math.ceil(items.length/CH));
+    for(let i=0;i<n;i++)await M.db.doc('rank/'+key+'-'+i).set({week,i,d:JSON.stringify(items.slice(i*CH,(i+1)*CH))});
+    if(old&&old.chunks>n)for(let i=n;i<old.chunks;i++)await M.db.doc('rank/'+key+'-'+i).delete();
+    const meta={week,kv:(kv>0)?kv:((old&&old.kv)||null),n:items.length,chunks:n,savedAt:new Date().toISOString(),name:name||(old&&old.name)||''};
+    await M.db.doc('weeks/'+key).set(meta);
+    M.idx[key]=meta;M.cache[week]=map;emit();
+  };
+  M.loadWeek=async week=>{
+    if(M.cache[week])return M.cache[week];
+    const meta=M.idx['v'+week];
+    if(!meta)throw new Error('Vecka '+week+' finns inte i minnet.');
+    const map={};
+    for(let i=0;i<(meta.chunks||1);i++){
+      const d=await M.db.doc('rank/v'+week+'-'+i).get();
+      if(d.exists)JSON.parse(d.data().d||'[]').forEach(([id,name,q,s,g])=>{map[id]={id,name,q,s,g}});
+    }
+    M.cache[week]=map;return map;
+  };
+  M.setKv=async(week,kv)=>{
+    const key='v'+week,old=M.idx[key];
+    if(!old||!(kv>0)||old.kv===kv)return;
+    await M.db.doc('weeks/'+key).update({kv});
+    M.idx[key]={...old,kv};emit();
+  };
+  M.deleteWeek=async week=>{
+    const key='v'+week,old=M.idx[key];if(!old)return;
+    for(let i=0;i<(old.chunks||1);i++)await M.db.doc('rank/'+key+'-'+i).delete();
+    await M.db.doc('weeks/'+key).delete();
+    delete M.idx[key];delete M.cache[week];emit();
+  };
+  M.saveSetup=async(name,secs)=>{
+    const id=slug(name),clean=secs.map(sc=>sc.map(v=>{const o=G(v);return o.k||o.n?o:o.t}));
+    const doc={name:String(name).trim(),d:JSON.stringify(clean),savedAt:new Date().toISOString()};
+    await M.db.doc('setups/'+id).set(doc);
+    M.sets[id]=doc;emit();return id;
+  };
+  M.deleteSetup=async id=>{await M.db.doc('setups/'+id).delete();delete M.sets[id];emit()};
+  M.backup=async()=>{
+    const weeks=[];
+    for(const w of M.weeks()){
+      const map=await M.loadWeek(w),m=M.idx['v'+w];
+      weeks.push({week:w,kv:m.kv||null,name:m.name||'',items:Object.values(map).map(o=>[o.id,o.name,o.q,o.s,o.g])});
+    }
+    const sets=Object.values(M.sets).map(s=>({name:s.name,secs:JSON.parse(s.d)}));
+    return JSON.stringify({app:'ButiksMinne',version:1,saved:new Date().toISOString(),weeks,sets,scans:window.Scan?Scan.all():[],ean:M.eanRows()});
+  };
+  M.restore=async text=>{
+    const j=JSON.parse(text);
+    if(!j||j.app!=='ButiksMinne')throw new Error('Det här är inte en ButiksMinne-fil.');
+    for(const w of j.weeks||[]){const map={};(w.items||[]).forEach(([id,name,q,s,g])=>{map[id]={id,name,q,s,g}});await M.saveWeek(w.week,map,w.kv,w.name)}
+    for(const s of j.sets||[])await M.saveSetup(s.name,s.secs);
+    if(window.Scan&&j.scans)await Scan.restore(j.scans);
+    if(j.ean&&j.ean.length)await M.saveEan(j.ean);
+    return{weeks:(j.weeks||[]).length,sets:(j.sets||[]).length};
+  };
+
+  // ================= ARTIKELUPPFÖLJNING (ren beräkning) =================
+  const rel=(a,b)=>b?(a-b)/b:null;
+  function calc(weeks,pick,zero){
+    const rows=weeks.map(w=>{const r=pick(w.map);return{week:w.week,kv:w.kv>0?w.kv:null,present:!!r.present,q:r.present?r.q:0,s:r.present?r.s:0,g:r.present?r.g:0}});
+    const use=rows.filter(r=>zero||r.present);
+    const avg=k=>use.length?use.reduce((a,r)=>a+r[k],0)/use.length:null;
+    const out={rows,n:use.length,avg:{q:avg('q'),s:avg('s'),g:avg('g')}};
+    out.avg.b=out.avg.s?out.avg.g/out.avg.s:null;
+    const L=rows[rows.length-1],P=rows.length>1?rows[rows.length-2]:null;
+    out.L=L;out.P=P;out.diff=null;out.pi=null;out.why='';
+    if(P&&(zero||(L.present&&P.present)))out.diff={q:rel(L.q,P.q),s:rel(L.s,P.s),g:rel(L.g,P.g),b:(L.s&&P.s)?L.g/L.s-P.g/P.s:null};
+    const others=rows.slice(0,-1).filter(r=>r.kv&&(zero||r.present));
+    if(!L.kv)out.why='kvitton saknas för V'+L.week+' (fyll i under Minne)';
+    else if(!zero&&!L.present)out.why='artikeln saknas V'+L.week;
+    else if(!others.length)out.why='minst en tidigare vecka med kvitton behövs';
+    else{
+      const pi=k=>{const a=others.reduce((x,r)=>x+r[k]/r.kv,0)/others.length;return a?(L[k]/L.kv)/a*100:null};
+      out.pi={q:pi('q'),s:pi('s'),g:pi('g')};
+      out.pi.v=(out.pi.g!=null&&out.pi.s!=null)?out.pi.g*0.6+out.pi.s*0.4:null;
+    }
+    return out;
+  }
+  window.calcFollow=function(weeks,list,zero){
+    const items=list.map(id=>{
+      let name='';for(let i=weeks.length-1;i>=0;i--){const o=weeks[i].map[id];if(o&&o.name){name=o.name;break}}
+      return{id,name,res:calc(weeks,m=>{const o=m[id];return o?{present:true,q:o.q,s:o.s,g:o.g}:{present:false}},zero)};
+    });
+    const total=list.length>1?calc(weeks,m=>{let p=false,q=0,s=0,g=0;list.forEach(id=>{const o=m[id];if(o){p=true;q+=o.q;s+=o.s;g+=o.g}});return{present:p,q,s,g}},zero):null;
+    return{items,total};
+  };
+
+  // ================= UI =================
+  const deselected=new Set();
+  const selWeeks=()=>M.weeks().filter(w=>!deselected.has(w));
+  function aCheck(){$('a_go').disabled=!(M.ok&&parseIds($('a_ids').value).length&&selWeeks().length)}
+  function renderChips(){
+    const ws=M.weeks();
+    $('a_wnote').textContent=!M.ok?'Minnet är inte tillgängligt i den här vyn.':(ws.length?'Välj vilka veckor uppföljningen ska innehålla.':'Inga sparade veckor än. Spara rankinglistor under Veckouppföljning eller Minne.');
+    $('a_weeks').innerHTML=ws.map(w=>`<label class="chip"><input type="checkbox" data-w="${w}" ${deselected.has(w)?'':'checked'}>V${w}</label>`).join('');
+    aCheck();
+  }
+  function selects(){
+    const ms=$('memsel'),cur=ms.value;
+    ms.innerHTML='<option value="">— ingen vald —</option>'+M.weeks().map(w=>{const m=M.idx['v'+w];return `<option value="${w}">V${w} · ${m.n} art.${m.kv?' · '+nf(m.kv,0)+' kvitton':''}</option>`}).join('');
+    ms.value=M.idx['v'+cur]?cur:'';
+    const ss=$('setsel'),sc=ss.value;
+    ss.innerHTML='<option value="">— välj —</option>'+Object.entries(M.sets).sort((a,b)=>a[1].name.localeCompare(b[1].name,'sv')).map(([id,s])=>`<option value="${esc(id)}">${esc(s.name)}</option>`).join('');
+    ss.value=M.sets[sc]?sc:'';
+  }
+  function renderMem(){
+    const st=$('mem_status');
+    st.className='msg '+(M.ok?'ok':'er');
+    st.textContent=M.ok?`Minnet är aktivt${M.local?' (sparas i den här webbläsaren på den här enheten – ta säkerhetskopia ibland)':''}: ${M.weeks().length} veckor och ${Object.keys(M.sets).length} avdelningar sparade.`:(M.initErr?'Minnet kunde inte läsas: '+M.initErr:'Minnet är inte tillgängligt här (webbläsaren blockerar lokal lagring, t.ex. privat läge). Appen fungerar som vanligt men sparar inget.');
+    const ws=M.weeks();
+    $('mem_weeks').innerHTML=ws.length?`<div class="tw" style="max-height:none"><table class="rt"><tr><th class="l">Vecka</th><th>Artiklar</th><th>Kvitton</th><th>Sparad</th><th></th></tr>${ws.map(w=>{const m=M.idx['v'+w];return `<tr><td class="l">V${w}</td><td>${m.n}</td><td><input class="kvin" type="number" inputmode="numeric" data-w="${w}" value="${m.kv||''}" placeholder="kvitton"></td><td>${esc((m.savedAt||'').slice(0,10))}</td><td><button class="x" data-del="${w}" type="button">Ta bort</button></td></tr>`}).join('')}</table></div>`:'<p>Inga veckor sparade.</p>';
+    const ss=Object.entries(M.sets);
+    $('mem_sets').innerHTML=ss.length?ss.map(([id,s])=>{let n=0;try{n=JSON.parse(s.d).flat().length}catch(e){}return `<div class="sh"><span><b>${esc(s.name)}</b> <span class="dim">· ${n} gavlar</span></span><button class="x" data-sdel="${esc(id)}" type="button">Ta bort</button></div>`}).join(''):'<p>Inga avdelningar sparade. Spara gavlar under Veckouppföljning.</p>';
+  }
+  document.addEventListener('mem',()=>{selects();renderMem();renderChips()});
+
+  // armerad radering (två tryck)
+  const arm=(btn,fn)=>{
+    if(btn.dataset.armed){clearTimeout(+btn.dataset.armed);fn();return}
+    const old=btn.textContent;btn.textContent='Säker?';
+    btn.dataset.armed=setTimeout(()=>{delete btn.dataset.armed;btn.textContent=old},4000);
+  };
+  $('mem_weeks').addEventListener('click',e=>{const b=e.target.closest('[data-del]');if(b)arm(b,()=>M.deleteWeek(+b.dataset.del).catch(x=>{$('mem_status').className='msg er';$('mem_status').textContent='Kunde inte ta bort: '+M.err(x)}))});
+  $('mem_weeks').addEventListener('change',e=>{const t=e.target;if(t.dataset.w==null||!t.classList.contains('kvin'))return;M.setKv(+t.dataset.w,Math.round(+t.value)).catch(x=>{$('mem_status').className='msg er';$('mem_status').textContent='Kunde inte spara kvitton: '+M.err(x)})});
+  $('mem_sets').addEventListener('click',e=>{const b=e.target.closest('[data-sdel]');if(b)arm(b,()=>M.deleteSetup(b.dataset.sdel).catch(x=>{$('mem_status').textContent='Kunde inte ta bort: '+M.err(x)}))});
+
+  // importera rankinglistor
+  $('mem_files').addEventListener('change',async e=>{
+    const files=[...e.target.files],out=$('mem_imp');
+    if(!files.length)return;
+    if(!M.ok){out.className='msg er';out.textContent='Minnet är inte tillgängligt.';return}
+    out.className='msg';out.innerHTML='';
+    const line=(t,c)=>{const d=document.createElement('div');d.className=c||'';d.textContent=t;out.appendChild(d)};
+    for(const f of files){
+      const w=weekFrom(f.name);
+      if(!w){line(`${f.name}: ingen vecka i filnamnet – lägg till t.ex. "v39" i namnet.`,'er');continue}
+      try{
+        const r=parseRank(await f.arrayBuffer()),had=!!M.idx['v'+w];
+        await M.saveWeek(w,r.map,undefined,f.name);
+        line(`${f.name}: V${w} sparad (${r.n} artiklar)${had?', ersatte tidigare':''}.`,'ok');
+      }catch(err){line(`${f.name}: ${M.err(err)}`,'er')}
+    }
+    e.target.value='';
+  });
+
+  // säkerhetskopia
+  $('mem_bk').addEventListener('click',async()=>{
+    const m=$('mem_bkm');m.className='msg';m.textContent='Samlar minnet …';
+    try{
+      if(!M.ok)throw new Error('Minnet är inte tillgängligt.');
+      if(!M.weeks().length&&!Object.keys(M.sets).length&&!(window.Scan&&Scan.all().length))throw new Error('Minnet är tomt – inget att spara.');
+      const dl=await getDl();
+      if(!dl)throw new Error('Nedladdning är inte tillgänglig i den här vyn.');
+      await dl.save({filename:'ButiksMinne.json',data:await M.backup()});
+      m.className='msg ok';m.textContent='Säkerhetskopian är sparad.';
+    }catch(e){m.className='msg er';m.textContent=e.code==='declined'?'Sparandet avbröts.':'Något gick fel: '+M.err(e)}
+  });
+  $('mem_rs').addEventListener('change',async e=>{
+    const f=e.target.files[0],m=$('mem_bkm');if(!f)return;
+    m.className='msg';m.textContent='Läser in …';
+    try{
+      if(!M.ok)throw new Error('Minnet är inte tillgängligt.');
+      const r=await M.restore(await f.text());
+      m.className='msg ok';m.textContent=`Klart: ${r.weeks} veckor och ${r.sets} avdelningar inlästa.`;
+    }catch(err){m.className='msg er';m.textContent='Något gick fel: '+M.err(err)}
+    e.target.value='';
+  });
+
+  // sparade avdelningar (gavlar)
+  $('setsave').addEventListener('click',async()=>{
+    const m=$('setmsg'),name=$('setname').value.trim();
+    m.className='msg';
+    try{
+      if(!M.ok)throw new Error('Minnet är inte tillgängligt.');
+      if(!name)throw new Error('Skriv ett namn på avdelningen.');
+      if(!secs.some(sc=>sc.some(v=>parseIds(G(v).t).length)))throw new Error('Det finns inga gavlar att spara än.');
+      await M.saveSetup(name,secs);
+      m.className='msg ok';m.textContent=`Avdelningen "${name}" är sparad.`;
+    }catch(e){m.className='msg er';m.textContent=M.err(e)}
+  });
+  $('setload').addEventListener('click',()=>{
+    const m=$('setmsg'),id=$('setsel').value;
+    if(!id||!M.sets[id]){m.className='msg er';m.textContent='Välj en avdelning först.';return}
+    try{
+      secs=JSON.parse(M.sets[id].d).map(sc=>sc.map(G));render();
+      $('setname').value=M.sets[id].name;
+      m.className='msg ok';m.textContent=`Gavlar hämtade för "${M.sets[id].name}".`;
+    }catch(e){m.className='msg er';m.textContent='Kunde inte läsa avdelningen.'}
+  });
+
+  // artikeluppföljning – knappar
+  $('a_ids').addEventListener('input',aCheck);
+  $('a_weeks').addEventListener('change',e=>{const w=+e.target.dataset.w;if(!w)return;e.target.checked?deselected.delete(w):deselected.add(w);aCheck()});
+  $('a_all').addEventListener('click',()=>{deselected.clear();renderChips()});
+  $('a_none').addEventListener('click',()=>{M.weeks().forEach(w=>deselected.add(w));renderChips()});
+
+  const pct=v=>v==null?'–':(v>0?'+':v<0?'−':'')+nf(Math.abs(v)*100,1)+' %';
+  const cls=v=>v==null?'':(v>0?'pos':v<0?'neg':'');
+  const dtxt=(r)=>`<td class="${cls(r)}">${pct(r)}</td>`;
+  const n0=v=>v==null?'–':nf(v,0);
+  function table(title,res,zero){
+    const r=res,L=r.L,P=r.P;
+    const wk=r.rows.map(x=>x.present?`<tr><td class="l">V${x.week}</td><td>${nf(x.q,0)}</td><td>${nf(x.s,0)}</td><td>${nf(x.g,0)}</td><td>${x.s?nf(x.g/x.s*100,1)+' %':'–'}</td></tr>`:`<tr class="dim"><td class="l">V${x.week}</td><td colspan="4" class="dim">${zero?'saknas (= 0)':'saknas'}</td></tr>`).join('');
+    const avg=`<tr class="avg"><td class="l">Snitt${r.n?` ${r.n}v`:''}</td><td>${r.avg.q==null?'–':nf(r.avg.q,1)}</td><td>${r.avg.s==null?'–':nf(r.avg.s,0)}</td><td>${r.avg.g==null?'–':nf(r.avg.g,0)}</td><td>${r.avg.b==null?'–':nf(r.avg.b*100,1)+' %'}</td></tr>`;
+    const diff=r.diff?`<tr><td class="l">Diff V${L.week}/V${P.week}</td>${dtxt(r.diff.q)}${dtxt(r.diff.s)}${dtxt(r.diff.g)}<td class="${cls(r.diff.b)}">${r.diff.b==null?'–':(r.diff.b>0?'+':r.diff.b<0?'−':'')+nf(Math.abs(r.diff.b)*100,1)+' pp'}</td></tr>`:`<tr><td class="l">Diff</td><td colspan="4" class="dim">${P?'saknas (artikeln finns inte båda veckorna)':'minst två veckor behövs'}</td></tr>`;
+    const pi=r.pi?`<tr class="k"><td class="l">Pres.index V${L.week}</td><td>${n0(r.pi.q)}</td><td>${n0(r.pi.s)}</td><td>${n0(r.pi.g)}</td><td>${n0(r.pi.v)}</td></tr>`:`<tr><td class="l">Pres.index</td><td colspan="4" class="dim">saknas: ${esc(r.why||'')}</td></tr>`;
+    return `<div class="card atab"><h2>${title}</h2><div class="tw" style="max-height:none"><table class="rt"><tr><th class="l">Vecka</th><th>Ant</th><th>Förs</th><th>BV</th><th>B%</th></tr>${wk}${avg}${diff}${pi}</table></div></div>`;
+  }
+  $('a_go').addEventListener('click',async()=>{
+    const m=$('a_msg'),out=$('a_res');m.className='msg';m.textContent='Hämtar veckor …';out.innerHTML='';
+    try{
+      const ws=selWeeks(),raw=parseIds($('a_ids').value),zero=$('a_zero').checked;
+      const rs=M.resolve(raw),list=rs.ids,eanOf={};rs.info.forEach(o=>{(eanOf[o.art]=eanOf[o.art]||[]).push(o.ean)});
+      if(!list.length)throw new Error(rs.miss.length?'Ingen av EAN-koderna hittades i artikelfrekvensrapporten. Importera den först.':'Inga artiklar angivna.');
+      const weeks=[];for(const w of ws)weeks.push({week:w,kv:(M.idx['v'+w]||{}).kv||null,map:await M.loadWeek(w)});
+      const r=window.calcFollow(weeks,list,zero);
+      out.innerHTML=(r.total?table('Alla artiklar tillsammans ('+list.length+' st)',r.total,zero):'')+r.items.map(it=>table(esc(it.id)+(it.name?' · '+esc(it.name):'')+(eanOf[it.id]?' <span class="dim">(EAN '+esc(eanOf[it.id].join(', '))+')</span>':''),it.res,zero)).join('')+'<div class="hint">Diff = senaste veckan mot veckan före bland de valda. Prestations index = senaste veckans index (värde / kvitton) mot snittet av tidigare valda veckor × 100. Kolumnen B% visar vägt index (BV 60 % + Förs 40 %), som i Excel-filen.</div>';
+      const miss=list.filter(id=>!weeks.some(w=>w.map[id]));
+      m.className='msg '+(miss.length||rs.miss.length?'er':'ok');
+      m.textContent=`${list.length} artiklar över ${ws.length} veckor (V${ws[0]}–V${ws[ws.length-1]}).`+(miss.length?` Hittades inte i någon vecka: ${miss.join(', ')}.`:'')+(rs.miss.length?` EAN utan träff i artikelfrekvensrapporten: ${rs.miss.join(', ')}.`:'');
+    }catch(e){m.className='msg er';m.textContent='Något gick fel: '+M.err(e)}
+  });
+
+  function eanStatus(){const e=$('a_eanm');if(!e)return;e.className='msg '+(M.ean.n?'ok':'');e.textContent=M.ok?(M.ean.n?M.ean.n+' EAN-koder inlästa.':'Ingen artikelfrekvensrapport inläst än.'):''}
+  document.addEventListener('mem',eanStatus);
+  $('a_ean').addEventListener('change',async e=>{
+    const f=e.target.files[0],m=$('a_eanm');if(!f)return;
+    m.className='msg';m.textContent='Läser in …';
+    try{
+      if(!M.ok)throw new Error('Minnet är inte tillgängligt.');
+      const rows=M.parseEan(await f.arrayBuffer());
+      await M.saveEan(rows);
+      m.className='msg ok';m.textContent=rows.length+' EAN-koder inlästa och sparade.';
+    }catch(err){m.className='msg er';m.textContent='Något gick fel: '+M.err(err)}
+    e.target.value='';
+  });
+  $('a_scn').addEventListener('click',()=>{
+    const m=$('a_eanm'),a=window.Scan?Scan.all():[];
+    if(!a.length){m.className='msg er';m.textContent='Inga skannade koder sparade.';return}
+    const have=new Set(parseIds($('a_ids').value));
+    const add=a.map(o=>o.ean).filter(c=>!have.has(c));
+    $('a_ids').value=($('a_ids').value.trim()?$('a_ids').value.trim()+'\n':'')+add.join('\n');
+    aCheck();m.className='msg ok';m.textContent=add.length+' skannade koder tillagda.';
+  });
+  renderMem();renderChips();
+  M.init();
+})();
+</script>
+<script>
+(function(){
+  const $=id=>document.getElementById(id);
+  const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  let items={},ready=false,stream=null,stop=false,det=null,zx=null,last={c:'',t:0},pending=null,persist=true;
+  const msg=(t,c)=>{const m=$('sc_msg');m.className='msg '+(c||'');m.textContent=t};
+  const valid=c=>{
+    if(!/^\d+$/.test(c))return false;
+    if(![8,12,13].includes(c.length))return false;
+    const d=c.split('').map(Number),k=d.pop();let sum=0;
+    d.reverse().forEach((x,i)=>{sum+=x*(i%2===0?3:1)});
+    return (10-sum%10)%10===k;
+  };
+  const load=async()=>{
+    try{
+      if(!await LocalDB.init())throw 0;
+      const r=await LocalDB.collection('scans').get();
+      items={};r.docs.forEach(d=>{const x=d.data();if(x&&x.ean)items[x.ean]=x});
+      ready=true;
+    }catch(e){ready=false;persist=false}
+    list();
+  };
+  const put=async o=>{items[o.ean]=o;if(ready){try{await LocalDB.doc('scans/'+o.ean).set(o)}catch(e){persist=false;$('sc_lm').className='msg er';$('sc_lm').textContent='Kunde inte spara i webbläsaren.'}}};
+  const SRC=[['Open Food Facts','https://world.openfoodfacts.org/api/v2/product/'],['Open Products Facts','https://world.openproductsfacts.org/api/v2/product/'],['Open Beauty Facts','https://world.openbeautyfacts.org/api/v2/product/'],['Open Pet Food Facts','https://world.openpetfoodfacts.org/api/v2/product/']];
+  const cache={};
+  const tmo=(u,ms)=>{const c=new AbortController();const t=setTimeout(()=>c.abort(),ms);return fetch(u,{signal:c.signal}).finally(()=>clearTimeout(t))};
+  async function lookup(c){
+    try{const l=window.Mem&&Mem.eanLookup&&Mem.eanLookup(c);if(l&&l.name)return{name:l.name,src:'artikelfrekvensrapporten'}}catch(e){}
+    if(!$('sc_look').checked)return null;
+    if(c in cache)return cache[c];
+    let res=null;
+    const one=async([n,u])=>{
+      const r=await tmo(u+c+'.json?fields=product_name,product_name_sv,generic_name,brands,quantity',5000);
+      if(!r.ok)throw 0;const j=await r.json();
+      if(j.status!==1||!j.product)throw 0;
+      const p=j.product,nm=(p.product_name_sv||p.product_name||p.generic_name||'').trim();
+      if(!nm)throw 0;
+      const br=(p.brands||'').split(',')[0].trim(),q=(p.quantity||'').trim();
+      let name=nm;if(br&&!nm.toLowerCase().includes(br.toLowerCase()))name=br+' '+name;
+      if(q&&!name.toLowerCase().includes(q.toLowerCase()))name+=' '+q;
+      return{name,src:n};
+    };
+    try{res=await Promise.any(SRC.map(one))}catch(e){res=null}
+    if(!res){try{
+      const r=await tmo('https://api.upcitemdb.com/prod/trial/lookup?upc='+c,5000);
+      if(r.ok){const j=await r.json(),it=j.items&&j.items[0];if(it&&it.title)res={name:it.title.trim(),src:'UPCitemdb'}}
+    }catch(e){}}
+    cache[c]=res;return res;
+  }
+  const beep=()=>{try{navigator.vibrate&&navigator.vibrate(60)}catch(e){}
+    try{const a=new (window.AudioContext||window.webkitAudioContext)(),o=a.createOscillator();o.frequency.value=1000;o.connect(a.destination);o.start();setTimeout(()=>{o.stop();a.close()},90)}catch(e){}};
+  function list(){
+    const q=$('sc_q').value.trim().toLowerCase();
+    const a=Object.values(items).sort((x,y)=>(y.ts||0)-(x.ts||0)).filter(o=>!q||o.ean.includes(q)||(o.name||'').toLowerCase().includes(q));
+    $('sc_list').innerHTML=a.length?a.map(o=>`<div class="sh"><span class="e">${esc(o.ean)}</span><input data-e="${esc(o.ean)}" value="${esc(o.name||'')}" placeholder="Namn" aria-label="Namn"><span class="e">${o.count>1?o.count+' st':''}</span><button class="x" data-d="${esc(o.ean)}" type="button">Ta bort</button></div>`).join(''):'<p>'+(q?'Inget matchar.':'Inga koder sparade.')+'</p>';
+    $('sc_csv').disabled=$('sc_clr').disabled=!Object.keys(items).length;
+  }
+  async function add(c,name){
+    const o=items[c]||{ean:c,name:'',count:0,ts:0};
+    o.count=(o.count||0)+1;o.ts=Date.now();if(name!=null&&name!=='')o.name=name;
+    await put(o);list();return o;
+  }
+  async function fill(c){
+    if($('sc_pn').value.trim())return;
+    $('sc_pn').placeholder='Söker namn …';
+    const r=await lookup(c);$('sc_pn').placeholder='Skriv namn';
+    if(pending!==c)return;
+    if(r){if(!$('sc_pn').value.trim())$('sc_pn').value=r.name;msg('Namn hittat via '+r.src+'. Ändra om det behövs och spara.','ok')}
+    else if($('sc_look').checked)msg('Inget namn hittades online. Skriv namn själv.','')
+  }
+  function onCode(c){
+    if(!valid(c))return;
+    const now=Date.now();
+    if(c===last.c&&now-last.t<2500){last.t=now;return}
+    last={c,t:now};
+    if($('sc_auto').checked){
+      beep();
+      add(c).then(async o=>{
+        msg('Sparad: '+c+(o.name?' · '+o.name:'')+(o.count>1?' ('+o.count+' st)':''),'ok');
+        if(!o.name){const r=await lookup(c);if(r&&!items[c].name){items[c].name=r.name;await put(items[c]);list();msg('Sparad: '+c+' · '+r.name+' (via '+r.src+')','ok')}else if(!r&&$('sc_look').checked&&!items[c].name)msg('Sparad: '+c+' (inget namn hittades online)','ok')}
+      });
+    }else{
+      beep();pending=c;$('sc_pe').value=c;$('sc_pn').value=(items[c]&&items[c].name)||'';
+      $('sc_pend').hidden=false;stopCam();msg('Kod hittad. Ge varan ett namn och spara.','ok');
+      setTimeout(()=>$('sc_pn').focus(),50);
+      fill(c);
+    }
+  }
+  async function stopCam(){
+    stop=true;
+    try{if(zx){zx.reset();zx=null}}catch(e){}
+    if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}
+    $('sc_v').srcObject=null;$('sc_vid').classList.remove('on');
+    $('sc_start').disabled=false;$('sc_stop').disabled=true;
+  }
+  const loadZX=()=>new Promise((res,rej)=>{
+    if(window.ZXing)return res();
+    const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js';
+    s.onload=res;s.onerror=()=>rej(new Error('Kunde inte ladda skannern (kräver internet).'));document.head.appendChild(s);
+  });
+  async function start(){
+    if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){msg('Kameran är inte tillgänglig här (kräver https och en webbläsare med kamerastöd).','er');return}
+    $('sc_pend').hidden=true;pending=null;stop=false;last={c:'',t:0};
+    $('sc_start').disabled=true;msg('Startar kameran …');
+    try{
+      const cons={video:{facingMode:{ideal:'environment'},width:{ideal:1280},height:{ideal:720}},audio:false};
+      const v=$('sc_v');
+      if('BarcodeDetector' in window){
+        try{det=new BarcodeDetector({formats:['ean_13','ean_8','upc_a','upc_e']})}catch(e){det=null}
+      }
+      if(det){
+        stream=await navigator.mediaDevices.getUserMedia(cons);
+        v.srcObject=stream;await v.play();
+        $('sc_vid').classList.add('on');$('sc_stop').disabled=false;msg('Rikta kameran mot streckkoden.');
+        const loop=async()=>{
+          if(stop)return;
+          try{if(v.readyState>=2){const r=await det.detect(v);if(r.length)onCode(r[0].rawValue)}}catch(e){}
+          if(!stop)setTimeout(loop,120);
+        };
+        loop();
+      }else{
+        await loadZX();
+        const Z=window.ZXing,h=new Map();
+        h.set(Z.DecodeHintType.POSSIBLE_FORMATS,[Z.BarcodeFormat.EAN_13,Z.BarcodeFormat.EAN_8,Z.BarcodeFormat.UPC_A,Z.BarcodeFormat.UPC_E]);
+        h.set(Z.DecodeHintType.TRY_HARDER,true);
+        zx=new Z.BrowserMultiFormatReader(h);
+        $('sc_vid').classList.add('on');$('sc_stop').disabled=false;
+        await zx.decodeFromConstraints(cons,v,(r)=>{if(r&&!stop)onCode(r.getText())});
+        msg('Rikta kameran mot streckkoden.');
+      }
+    }catch(e){
+      await stopCam();
+      msg(e&&e.name==='NotAllowedError'?'Kameran blockerades. Tillåt kameraåtkomst för sidan i webbläsarens inställningar.':'Kunde inte starta kameran: '+((e&&e.message)||e),'er');
+    }
+  }
+  $('sc_start').onclick=start;
+  $('sc_stop').onclick=()=>{stopCam();msg('')};
+  $('sc_ps').onclick=async()=>{
+    if(!pending)return;
+    const c=pending;pending=null;$('sc_pend').hidden=true;
+    await add(c,$('sc_pn').value.trim());msg('Sparad: '+c,'ok');start();
+  };
+  $('sc_pn').addEventListener('keydown',e=>{if(e.key==='Enter')$('sc_ps').click()});
+  $('sc_pc').onclick=()=>{pending=null;$('sc_pend').hidden=true;msg('');start()};
+  $('sc_madd').onclick=async()=>{
+    const c=$('sc_man').value.replace(/\s+/g,'');
+    if(!valid(c)){msg('Ogiltig EAN-kod (kontrollsiffran stämmer inte).','er');return}
+    $('sc_man').value='';
+    pending=null;$('sc_pend').hidden=false;pending=c;$('sc_pe').value=c;$('sc_pn').value=(items[c]&&items[c].name)||'';
+    msg('Ge varan ett namn och spara.','ok');$('sc_pn').focus();fill(c);
+  };
+  $('sc_q').addEventListener('input',list);
+  $('sc_list').addEventListener('change',async e=>{
+    const c=e.target.dataset.e;if(!c||!items[c])return;
+    items[c].name=e.target.value.trim();await put(items[c]);
+  });
+  $('sc_list').addEventListener('click',async e=>{
+    const c=e.target.dataset.d;if(!c)return;
+    delete items[c];try{await LocalDB.doc('scans/'+c).delete()}catch(x){}list();
+  });
+  $('sc_clr').onclick=async()=>{
+    if(!confirm('Ta bort alla sparade koder?'))return;
+    for(const c of Object.keys(items)){try{await LocalDB.doc('scans/'+c).delete()}catch(x){}}
+    items={};list();
+  };
+  $('sc_csv').onclick=async()=>{
+    const m=$('sc_lm');
+    try{
+      const rows=['EAN;Namn;Antal skanningar'].concat(Object.values(items).sort((a,b)=>(a.ts||0)-(b.ts||0)).map(o=>[o.ean,'"'+String(o.name||'').replace(/"/g,'""')+'"',o.count||1].join(';')));
+      const dl=await getDl();
+      await dl.save({filename:'Skannade EAN.csv',data:new Blob(['﻿'+rows.join('\r\n')],{type:'text/csv'})});
+      m.className='msg ok';m.textContent='Filen är sparad.';
+    }catch(e){m.className='msg er';m.textContent='Något gick fel: '+((e&&e.message)||e)}
+  };
+  document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',()=>{if(b.dataset.t!=='scan')stopCam()}));
+  document.addEventListener('visibilitychange',()=>{if(document.hidden)stopCam()});
+  window.Scan={items:()=>items,reload:load,all:()=>Object.values(items),
+    restore:async arr=>{for(const o of arr||[]){if(o&&o.ean&&valid(o.ean)){const old=items[o.ean];await put({ean:o.ean,name:o.name||(old&&old.name)||'',count:Math.max(o.count||1,(old&&old.count)||0),ts:o.ts||Date.now()})}}list()}};
+  load();
+})();
+</script>
+</body>
+</html>
